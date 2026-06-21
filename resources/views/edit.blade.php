@@ -27,7 +27,7 @@
         <div class="mb-2">
             <label>Foto Lama</label><br>
             @if($item->foto)
-                <img src="{{ asset('storage/' . $item->foto) }}" width="120" class="mb-2">
+            <img src="{{ asset($item->foto) }}" width="100" class="mb-2">
             @else
                 <p>Tidak ada foto</p>
             @endif

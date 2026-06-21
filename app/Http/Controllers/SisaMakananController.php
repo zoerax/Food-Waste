@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\SisaMakananExport;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Models\SisaMakanan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SisaMakananExport;
 
 class SisaMakananController extends Controller
 {
-
-    public function index()
+    // =========================
+    // DASHBOARD (GRAFIK)
+    // =========================
+    public function dashboard()
     {
-        $data = SisaMakanan::all();
-
-        // GROUP PER BULAN
         $chart = SisaMakanan::selectRaw("
             MONTH(tanggal) as bulan,
             AVG(nasi) as avgNasi,
@@ -28,7 +26,6 @@ class SisaMakananController extends Controller
         ->orderBy('bulan')
         ->get();
 
-        // NAMA BULAN
         $namaBulan = [
             1 => 'Jan', 2 => 'Feb', 3 => 'Mar',
             4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
@@ -53,7 +50,6 @@ class SisaMakananController extends Controller
         }
 
         return view('index', compact(
-            'data',
             'bulan',
             'avgNasi',
             'avgHewani',
@@ -63,6 +59,26 @@ class SisaMakananController extends Controller
         ));
     }
 
+    // =========================
+    // TABEL DATA
+    // =========================
+    public function index()
+    {
+        $data = SisaMakanan::latest()->get();
+        return view('tabel', compact('data'));
+    }
+
+    // =========================
+    // FORM TAMBAH
+    // =========================
+    public function create()
+    {
+        return view('tambah');
+    }
+
+    // =========================
+    // SIMPAN DATA
+    // =========================
     public function store(Request $request)
     {
         $request->validate([
@@ -78,13 +94,17 @@ class SisaMakananController extends Controller
             'foto' => 'nullable|image'
         ]);
 
-        // upload foto
         $fotoPath = null;
+
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('foto', 'public');
+            $file = $request->file('foto');
+            $namaFile = time().'_'.$file->getClientOriginalName();
+
+            $file->move(public_path('foto'), $namaFile);
+
+            $fotoPath = 'foto/'.$namaFile;
         }
 
-        // hitung rata-rata
         $rata = (
             $request->nasi +
             $request->hewani +
@@ -107,28 +127,41 @@ class SisaMakananController extends Controller
             'rata_rata' => $rata
         ]);
 
-        return redirect('/')->with('success', 'Data berhasil disimpan');
+        return redirect()->route('tabel')->with('success', 'Data berhasil disimpan');
     }
 
+    // =========================
+    // EDIT
+    // =========================
     public function edit($id)
     {
         $item = SisaMakanan::findOrFail($id);
         return view('edit', compact('item'));
     }
 
+    // =========================
+    // UPDATE
+    // =========================
     public function update(Request $request, $id)
     {
         $item = SisaMakanan::findOrFail($id);
 
+        $fotoPath = $item->foto;
+
         if ($request->hasFile('foto')) {
 
-            if ($item->foto && Storage::exists('public/' . $item->foto)) {
-                Storage::delete('public/' . $item->foto);
+            $oldPath = public_path($item->foto);
+
+            if ($item->foto && file_exists($oldPath)) {
+                unlink($oldPath);
             }
 
-            $fotoPath = $request->file('foto')->store('foto', 'public');
-        } else {
-            $fotoPath = $item->foto;
+            $file = $request->file('foto');
+            $namaFile = time().'_'.$file->getClientOriginalName();
+
+            $file->move(public_path('foto'), $namaFile);
+
+            $fotoPath = 'foto/'.$namaFile;
         }
 
         $rata = (
@@ -153,29 +186,37 @@ class SisaMakananController extends Controller
             'rata_rata' => $rata
         ]);
 
-        return redirect('/')->with('success', 'Data berhasil diupdate');
+        return redirect()->route('tabel')->with('success', 'Data berhasil diupdate');
     }
 
+    // =========================
+    // DELETE
+    // =========================
     public function destroy($id)
     {
         $item = SisaMakanan::findOrFail($id);
 
-        if ($item->foto && Storage::exists('public/' . $item->foto)) {
-            Storage::delete('public/' . $item->foto);
+        $path = public_path($item->foto);
+
+        if ($item->foto && file_exists($path)) {
+            unlink($path);
         }
 
         $item->delete();
 
-        return redirect('/')->with('success', 'Data berhasil dihapus');
+        return redirect()->route('tabel')->with('success', 'Data berhasil dihapus');
     }
 
+    // =========================
+    // EXPORT EXCEL
+    // =========================
     public function export(Request $request)
     {
-        $tanggal_awal = $request->tanggal_awal;
-        $tanggal_akhir = $request->tanggal_akhir;
-
         return Excel::download(
-            new SisaMakananExport($tanggal_awal, $tanggal_akhir),
+            new SisaMakananExport(
+                $request->tanggal_awal,
+                $request->tanggal_akhir
+            ),
             'data_sisa_makanan.xlsx'
         );
     }
