@@ -82,7 +82,7 @@
                                 <label>Nabati(%)</label>
                                 <input type="number" name="nabati" class="form-control form-control-sm" required>
                             </div>
-
+                            
                             <div class="mb-2">
                                 <label>Sayur(%)</label>
                                 <input type="number" name="sayur" class="form-control form-control-sm" required>
@@ -91,6 +91,16 @@
                             <div class="mb-2">
                                 <label>Buah(%)</label>
                                 <input type="number" name="buah" class="form-control form-control-sm" required>
+                            </div>
+
+                            <div class="mb-2">
+                                <label>Snack Pagi (%)</label>
+                                <input type="number" name="snack_pagi" class="form-control">
+                            </div>
+                            
+                            <div class="mb-2">
+                                <label>Snack Sore (%)</label>
+                                <input type="number" name="snack_sore" class="form-control">
                             </div>
 
                             <div class="mb-2">

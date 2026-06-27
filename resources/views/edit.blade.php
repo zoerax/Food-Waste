@@ -21,13 +21,21 @@
 
         <input type="text" name="ruangan" value="{{ $item->ruangan }}" class="form-control mb-2">
 
+        {{-- Makanan utama --}}
         @foreach(['nasi','hewani','nabati','sayur','buah'] as $itemField)
-            <input type="number" name="{{ $itemField }}" value="{{ $item->$itemField }}" class="form-control mb-2">
+            <input type="number" name="{{ $itemField }}" value="{{ $item->$itemField }}" class="form-control mb-2" placeholder="{{ ucfirst($itemField) }}">
         @endforeach
+
+        {{-- Snack --}}
+        <input type="number" name="snack_pagi" value="{{ $item->snack_pagi }}" class="form-control mb-2" placeholder="Snack Pagi (%)">
+
+        <input type="number" name="snack_sore" value="{{ $item->snack_sore }}" class="form-control mb-2" placeholder="Snack Sore (%)">
+
+        {{-- Foto --}}
         <div class="mb-2">
             <label>Foto Lama</label><br>
             @if($item->foto)
-            <img src="{{ asset($item->foto) }}" width="100" class="mb-2">
+                <img src="{{ asset($item->foto) }}" width="100" class="mb-2">
             @else
                 <p>Tidak ada foto</p>
             @endif

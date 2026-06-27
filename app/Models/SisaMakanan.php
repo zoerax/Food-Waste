@@ -17,6 +17,8 @@ class SisaMakanan extends Model
         'nabati',
         'sayur',
         'buah',
+        'snack_pagi',
+        'snack_sore',
         'rata_rata'
     ];
 }

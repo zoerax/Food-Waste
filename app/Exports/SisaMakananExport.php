@@ -33,6 +33,8 @@ class SisaMakananExport implements FromCollection, WithHeadings
                 'nabati',
                 'sayur',
                 'buah',
+                'snack_pagi',
+                'snack_sore',
                 'rata_rata'
             )
             ->get();
@@ -50,6 +52,8 @@ class SisaMakananExport implements FromCollection, WithHeadings
             'Nabati (%)',
             'Sayur (%)',
             'Buah (%)',
+            'Snack Pagi (%)',
+            'Snack Sore (%)',
             'Rata-rata (%)'
         ];
     }

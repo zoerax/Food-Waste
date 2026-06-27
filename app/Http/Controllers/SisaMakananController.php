@@ -20,7 +20,9 @@ class SisaMakananController extends Controller
             AVG(hewani) as avgHewani,
             AVG(nabati) as avgNabati,
             AVG(sayur) as avgSayur,
-            AVG(buah) as avgBuah
+            AVG(buah) as avgBuah,
+            AVG(snack_pagi) as avgSnackPagi,
+            AVG(snack_sore) as avgSnackSore
         ")
         ->groupBy('bulan')
         ->orderBy('bulan')
@@ -39,6 +41,8 @@ class SisaMakananController extends Controller
         $avgNabati = [];
         $avgSayur = [];
         $avgBuah = [];
+        $avgSnackPagi = [];
+        $avgSnackSore = [];
 
         foreach ($chart as $item) {
             $bulan[] = $namaBulan[$item->bulan];
@@ -47,6 +51,8 @@ class SisaMakananController extends Controller
             $avgNabati[] = round($item->avgNabati, 1);
             $avgSayur[] = round($item->avgSayur, 1);
             $avgBuah[] = round($item->avgBuah, 1);
+            $avgSnackPagi[] = round($item->avgSnackPagi, 1);
+            $avgSnackSore[] = round($item->avgSnackSore, 1);
         }
 
         return view('index', compact(
@@ -55,7 +61,9 @@ class SisaMakananController extends Controller
             'avgHewani',
             'avgNabati',
             'avgSayur',
-            'avgBuah'
+            'avgBuah',
+            'avgSnackPagi',
+            'avgSnackSore'
         ));
     }
 
@@ -91,6 +99,8 @@ class SisaMakananController extends Controller
             'nabati' => 'required|numeric|max:95',
             'sayur' => 'required|numeric|max:95',
             'buah' => 'required|numeric|max:95',
+            'snack_pagi' => 'nullable|numeric|min:0|max:100',
+            'snack_sore' => 'nullable|numeric|min:0|max:100',
             'foto' => 'nullable|image'
         ]);
 
@@ -124,6 +134,8 @@ class SisaMakananController extends Controller
             'nabati' => $request->nabati,
             'sayur' => $request->sayur,
             'buah' => $request->buah,
+            'snack_pagi' => $request->snack_pagi,
+            'snack_sore' => $request->snack_sore,
             'rata_rata' => $rata
         ]);
 
@@ -182,6 +194,8 @@ class SisaMakananController extends Controller
             'nabati' => $request->nabati,
             'sayur' => $request->sayur,
             'buah' => $request->buah,
+            'snack_pagi' => $request->snack_pagi,
+            'snack_sore' => $request->snack_sore,
             'foto' => $fotoPath,
             'rata_rata' => $rata
         ]);

@@ -18,6 +18,8 @@
                     <th>Nabati</th>
                     <th>Sayur</th>
                     <th>Buah</th>
+                    <th>Snack Pagi</th>
+                    <th>Snack Sore</th>
                     <th>Foto</th>
                 </tr>
             </thead>
@@ -49,6 +51,8 @@
                     <td>{{ $d->nabati }}</td>
                     <td>{{ $d->sayur }}</td>
                     <td>{{ $d->buah }}</td>
+                    <td>{{ $d->snack_pagi }}%</td>
+                    <td>{{ $d->snack_sore }}%</td>
 
                     <td>
                         @if($d->foto)
