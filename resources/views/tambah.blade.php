@@ -90,7 +90,7 @@
 
                             <div class="mb-2">
                                 <label>Buah(%)</label>
-                                <input type="number" name="buah" class="form-control form-control-sm" required>
+                                <input type="number" name="buah" class="form-control form-control-sm">
                             </div>
 
                             <div class="mb-2">

@@ -98,31 +98,44 @@ class SisaMakananController extends Controller
             'hewani' => 'required|numeric|max:95',
             'nabati' => 'required|numeric|max:95',
             'sayur' => 'required|numeric|max:95',
-            'buah' => 'required|numeric|max:95',
+            'buah' => 'nullable|numeric|max:95',
             'snack_pagi' => 'nullable|numeric|min:0|max:100',
             'snack_sore' => 'nullable|numeric|min:0|max:100',
             'foto' => 'nullable|image'
         ]);
 
+        // =========================
+        // HANDLE FOTO
+        // =========================
         $fotoPath = null;
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            $namaFile = time().'_'.$file->getClientOriginalName();
-
+            $namaFile = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('foto'), $namaFile);
-
-            $fotoPath = 'foto/'.$namaFile;
+            $fotoPath = 'foto/' . $namaFile;
         }
 
-        $rata = (
-            $request->nasi +
-            $request->hewani +
-            $request->nabati +
-            $request->sayur +
+        // =========================
+        // HITUNG RATA-RATA DINAMIS
+        // =========================
+        $dataMakanan = [
+            $request->nasi,
+            $request->hewani,
+            $request->nabati,
+            $request->sayur,
             $request->buah
-        ) / 5;
+        ];
 
+        $filled = array_filter($dataMakanan, fn($v) => $v !== null);
+
+        $rata = count($filled) > 0 
+            ? array_sum($filled) / count($filled) 
+            : 0;
+
+        // =========================
+        // SIMPAN DATA
+        // =========================
         SisaMakanan::create([
             'tanggal' => $request->tanggal,
             'nama' => $request->nama,
@@ -133,10 +146,10 @@ class SisaMakananController extends Controller
             'hewani' => $request->hewani,
             'nabati' => $request->nabati,
             'sayur' => $request->sayur,
-            'buah' => $request->buah,
+            'buah' => $request->buah, // bisa null
             'snack_pagi' => $request->snack_pagi,
             'snack_sore' => $request->snack_sore,
-            'rata_rata' => $rata
+            'rata_rata' => round($rata, 1)
         ]);
 
         return redirect()->route('tabel')->with('success', 'Data berhasil disimpan');
@@ -158,6 +171,9 @@ class SisaMakananController extends Controller
     {
         $item = SisaMakanan::findOrFail($id);
 
+        // =========================
+        // HANDLE FOTO
+        // =========================
         $fotoPath = $item->foto;
 
         if ($request->hasFile('foto')) {
@@ -176,14 +192,26 @@ class SisaMakananController extends Controller
             $fotoPath = 'foto/'.$namaFile;
         }
 
-        $rata = (
-            $request->nasi +
-            $request->hewani +
-            $request->nabati +
-            $request->sayur +
+        // =========================
+        // HITUNG RATA-RATA DINAMIS
+        // =========================
+        $dataMakanan = [
+            $request->nasi,
+            $request->hewani,
+            $request->nabati,
+            $request->sayur,
             $request->buah
-        ) / 5;
+        ];
 
+        $filled = array_filter($dataMakanan, fn($v) => $v !== null);
+
+        $rata = count($filled) > 0 
+            ? array_sum($filled) / count($filled) 
+            : 0;
+
+        // =========================
+        // UPDATE DATA
+        // =========================
         $item->update([
             'tanggal' => $request->tanggal,
             'nama' => $request->nama,
@@ -197,7 +225,7 @@ class SisaMakananController extends Controller
             'snack_pagi' => $request->snack_pagi,
             'snack_sore' => $request->snack_sore,
             'foto' => $fotoPath,
-            'rata_rata' => $rata
+            'rata_rata' => round($rata, 1)
         ]);
 
         return redirect()->route('tabel')->with('success', 'Data berhasil diupdate');
